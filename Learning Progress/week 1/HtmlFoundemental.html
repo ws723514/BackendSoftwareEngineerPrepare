@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HTML Fundamental</title>
+</head>
+
+<body>
+    <h1>Welcome to HTML Fundamentals</h1>
+    <h2>Introduction</h2>
+    <p>This document covers the basic structure of an HTML document, including elements, attributes, and comments.</p>
+    
+    <h3>Basic HTML Structure</h3>
+    <div>
+        -- Crtl + / to comment out a line in HTML
+        <!-- This is a comment in HTML -->
+        -- This is a comment in HTML
+        -- emmet type : quick type in for html
+        -- h1 tab
+        <hr>
+
+        -- div tab
+        <div>div tab</div>
+        <hr>
+
+        -- div>p insert <p> into div</p>
+        <div>
+            <p>div>p insert <p> into div</p></p>
+        </div>
+        <hr>
+
+        -- div>ul>li insert li into ul inside div
+        <div>
+            <ul>
+                <li>div>ul>li insert li into ul inside div</li>
+            </ul>
+        </div>
+        <hr>
+
+        -- crate multiple div*3
+        <div>crate multiple div*3</div>
+        <div>crate multiple div*3</div>
+        <div>crate multiple div*3</div>
+        <hr>
+        
+        -- creating multiple list items
+        -- ul>li*4
+        <ul>
+            <li>creating multiple list items</li>
+            <li>ul>li*4</li>
+            <li>---</li>
+            <li>----</li>
+        </ul>
+        <hr>
+
+        -- place text inside of curly braces follwing the tag type
+        -- div{what's this?}
+        <div>div{what's this?}</div>
+        <hr>
+
+        -- put div into multiple div
+        -- p>div{text}*2
+        <p>
+        <div>text</div>
+        <div>text</div>
+        </p>
+        <hr>
+
+        -- Sibling elements are separated by +
+        -- div+ul>li*3 press tab (a better way)
+        <div></div>
+        <ul>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        <hr>
+
+        -- Creating elements with attributes
+        --div[class=’class1’]*2 
+        <div class="’class1’"></div>
+        <div class="’class1’"></div>
+        <hr>
+
+        -- div>p[class=’style1’]{text}*3 
+        <div>
+            <p class="'style1'">text</p>
+            <p class="'style1'">text</p>
+            <p class="'style1'">text</p>
+        </div>
+        <hr>
+
+        <div>
+            1<br>
+            2<br>
+            3<br>
+            <p>
+            change them to list, you dont need to change them one by one
+            press crtl + shift + a (default shortcut for emmet) and select 
+            the conntent you wan to use emmet on, then press tab
+            for example: 
+            change 1, 2, 3 to list 
+            select the 1, 2, 3, then press crtl + shift + a, 
+            then you type li*3 in the command line, then press tab
+            </p>
+
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+        </div>
+    </div>
+
+
+    <h3>header and comment</h3>
+    <div>
+        <p>Meaning of h1...h6 and comment meaning</p>
+        <p>h1..h6 for stucture format and design</p>
+        <p>Comment is used to add notes or explanations in the code that are not displayed in the
+            browser.</p>
+    </div>
+
+
+    <h3>Emmet</h3>
+        <div>
+            <p>Emmet is a plugin for text editors that allows for faster HTML and CSS coding.</p>
+            <p>Emmet abbreviations can be expanded into full HTML code snippets.</p>
+            <p>Emmet can be used to create complex HTML structures quickly.</p>
+        </div>
+
+    <h3>html can create two kinds of list:</h2>
+        <div>
+            <ul>
+                <li>Unordered List: Uses bullet points to list items without a specific order.</li>
+                <li>second rows? might be in the second</li>
+                <li>third rows? might be in the third</li>
+                <li>fourth rows? might be in the fourth</li>    
+            </ul>
+
+            <ol>
+                <li>Ordered List: Uses numbers to list items in a specific order.</li>
+                <li>Ordered List 2</li>
+                <li>Ordered List 3</li>
+            </ol>
+        </div>
+
+
+    <h3>Harry potter books</h3>
+    <ol>
+        <li>book 1</li>
+        <li>book 2</li>
+        <li>book 3</li>
+    </ol>
+
+    <h3>some common tags</h3>
+    small <br>
+    <small>small</small>
+    <hr>
+
+    <h4>bold / strong</h4>
+    bold: <b>keywords but not include some special important</b><br>
+    strong: <strong>Import not just bold format</strong><br><br>
+
+    <h4>emphasis and Italic</h4>
+    em: <em>emphasized some keywords in sentence to express different meaning</em><br>
+    To be or <em>not to be</em>, that is the question.<br>
+    italic: <i>italic</i><br>
+    <hr>
+
+    superscript / subscript<br>
+    superscript : Square of x X<sup>2</sup>
+    subscript: water chemical form H<sub>2</sub>O
+    <hr>
+
+    blcokquote<br>
+    <blockquote>
+        This is a blockquote. It is used to quote large sections of text.   
+    </blockquote>
+    <hr>
+
+    <h3> Links </h3>
+    <p>Links are created using the <code>&lt;a&gt;</code> tag.</p>
+    <h3>Link Outside pages / internet </h3>
+    <p>Example of a link to website: <a href="https://www.google.com">Google</a></p>
+    <p>Example of a link to an email: <a href="mailto: nathaniel@gmail.com ">Email Nathaniel</a></p>
+    <p>Example of a link to a phone number: <a href="tel:+1234567890">Call Nathaniel</a></p>
+    <p>Example of a link with a target attribute: <a href="https://www.example.com" target="_blank">Open Example in New Tab</a></p>
+
+    <h3>Link Inside / local file or section </h3>
+    <p>Example of a link to a local file: <a href="file:///e:/GitData/BackendSoftwareEngineerPrepare/Learning%20Progress/week%201/Copy_sequoia_info.html">Local HTML File Copy_sequoia_info.html</a></p>
+    <p>Example of a link to a specific section in the same document: <a href="#section1">Go to Section 1</a></p>
+    <p>Example of a link to a specific section in another document: <a href="file:///e:/GitData/BackendSoftwareEngineerPrepare/Learning%20Progress/week%201/HtmlFoundemental.html#section1">Go to Section 1 in Local HTML File</a></p>
+    
+    <h3>Links Notices</h3>
+    <p> 
+        all These links keywords wouldn't take the whole line space, it will auto fit in 
+        the space
+    </p>
+    <a href="http://example.com">Example</a>
+    <a href="http://www.google.com">Google</a>
+    <p>
+        you should see example and google links are sit in the same line
+    </p>
+    <p>
+        of course, you can use list to make them on different lines. 
+        for all tags take whole line space, we can achieve our goal by using these tags.
+        <ul>
+            <li><a href="http://example.com">Example</a></li>
+            <li><a href="http://www.google.com">Google</a></li>
+        </ul>
+    </p>
+    
+
+    
+    <h3 id="section1">Section 1 </h3>
+    <p> link test paragraph <br> 
+        After click the section link, you should jump and see here! 
+    </p>
+</body>
+
+</html>
