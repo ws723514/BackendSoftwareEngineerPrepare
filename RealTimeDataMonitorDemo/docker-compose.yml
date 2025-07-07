@@ -1,0 +1,6 @@
+services:
+  realtime-demo:
+    build: .
+    ports:
+      - "8000:8000"
+      - "50051:50051"

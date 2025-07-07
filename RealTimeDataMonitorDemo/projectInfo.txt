@@ -1,0 +1,24 @@
+
+Scenario: Suppose you want to collect raw data packets from IoT devices or network probes, extract key indicators in real time through concurrent pipelines, and finally expose them to the front-end or other back-end systems for query through HTTP/JSON.
+
+Cover FastAPI + AsyncIO (Web layer)
+
+Cover gRPC + Protobuf + concurrent stream processing (data entry)
+
+Comes with Pytest / Go test, CI, Docker, cloud deployment scripts
+
+Scenario: 
+    Suppose you want to collect raw data packets from IoT devices or network probes, extract key indicators in real time through concurrent pipelines, and finally expose them to the front-end or other back-end systems for query through HTTP/JSON.
+
+Key Features/Skills:
+    - Cover FastAPI + AsyncIO (Web layer)
+    - Cover gRPC + Protobuf + concurrent stream processing (data entry)
+    - Comes with Pytest / Go test, CI, Docker, cloud deployment scripts
+
+
+场景：
+    假设你要收集来自 IoT 设备或网络探针的原始数据包，经过并发管道实时提取关键指标，最后通过 HTTP/JSON 暴露给前端或别的后端系统查询。
+
+覆盖 FastAPI + AsyncIO（Web 层）
+覆盖 gRPC + Protobuf + 并发流处理（数据入口）
+自带 Pytest / Go test、CI、Docker、云部署脚本
