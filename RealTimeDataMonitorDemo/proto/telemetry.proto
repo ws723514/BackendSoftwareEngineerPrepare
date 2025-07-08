@@ -1,18 +1,7 @@
 syntax = "proto3";
 
-/*
- * 关键行：告诉 Python 代码“包名 = app.telemetry”。
- * 你可以选下面两种方式 **择一**（不要同时存在）：
- */
+package app;
 
-/* 方式 A —— 用 package 前缀 
-package app.telemetry; */
-
-/* 方式 B —— 用专门语法（>= protoc 3.19 支持）*/
-option python_package = "app.telemetry";
-
-
-/* 你的已有 message/service 保持不变 ↓ */
 message Packet {
   string device_id = 1;
   int64  timestamp = 2;
@@ -20,7 +9,7 @@ message Packet {
 }
 
 service TelemetryIngest {
-  rpc StreamPackets (stream Packet) returns (Ack);
+  rpc StreamPackets (stream Packet) returns (Ack); 
 }
 
 message Ack { bool ok = 1; }

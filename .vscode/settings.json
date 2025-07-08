@@ -1,0 +1,8 @@
+{
+    "editor.fontSize": 16,
+    "terminal.integrated.fontSize": 16,
+    "workbench.sideBar.location": "left",
+    "workbench.tree.indent": 20,
+    "workbench.tree.renderIndentGuides": "always",
+    "workbench.fontAliasing": "antialiased"
+} 

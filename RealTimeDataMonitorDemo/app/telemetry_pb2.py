@@ -24,17 +24,17 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0ftelemetry.proto\x12\ttelemetry\"?\n\x06Packet\x12\x11\n\tdevice_id\x18\x01 \x01(\t\x12\x11\n\ttimestamp\x18\x02 \x01(\x03\x12\x0f\n\x07payload\x18\x03 \x01(\x0c\"\x11\n\x03\x41\x63k\x12\n\n\x02ok\x18\x01 \x01(\x08\x32G\n\x0fTelemetryIngest\x12\x34\n\rStreamPackets\x12\x11.telemetry.Packet\x1a\x0e.telemetry.Ack(\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0ftelemetry.proto\x12\x03\x61pp\"?\n\x06Packet\x12\x11\n\tdevice_id\x18\x01 \x01(\t\x12\x11\n\ttimestamp\x18\x02 \x01(\x03\x12\x0f\n\x07payload\x18\x03 \x01(\x0c\"\x11\n\x03\x41\x63k\x12\n\n\x02ok\x18\x01 \x01(\x08\x32;\n\x0fTelemetryIngest\x12(\n\rStreamPackets\x12\x0b.app.Packet\x1a\x08.app.Ack(\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'telemetry_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_PACKET']._serialized_start=30
-  _globals['_PACKET']._serialized_end=93
-  _globals['_ACK']._serialized_start=95
-  _globals['_ACK']._serialized_end=112
-  _globals['_TELEMETRYINGEST']._serialized_start=114
-  _globals['_TELEMETRYINGEST']._serialized_end=185
+  _globals['_PACKET']._serialized_start=24
+  _globals['_PACKET']._serialized_end=87
+  _globals['_ACK']._serialized_start=89
+  _globals['_ACK']._serialized_end=106
+  _globals['_TELEMETRYINGEST']._serialized_start=108
+  _globals['_TELEMETRYINGEST']._serialized_end=167
 # @@protoc_insertion_point(module_scope)

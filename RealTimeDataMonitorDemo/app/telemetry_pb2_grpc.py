@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import telemetry_pb2 as telemetry__pb2
+from . import telemetry_pb2 as telemetry__pb2
 
 GRPC_GENERATED_VERSION = '1.73.1'
 GRPC_VERSION = grpc.__version__
@@ -35,7 +35,7 @@ class TelemetryIngestStub(object):
             channel: A grpc.Channel.
         """
         self.StreamPackets = channel.stream_unary(
-                '/telemetry.TelemetryIngest/StreamPackets',
+                '/app.TelemetryIngest/StreamPackets',
                 request_serializer=telemetry__pb2.Packet.SerializeToString,
                 response_deserializer=telemetry__pb2.Ack.FromString,
                 _registered_method=True)
@@ -60,9 +60,9 @@ def add_TelemetryIngestServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'telemetry.TelemetryIngest', rpc_method_handlers)
+            'app.TelemetryIngest', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('telemetry.TelemetryIngest', rpc_method_handlers)
+    server.add_registered_method_handlers('app.TelemetryIngest', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -83,7 +83,7 @@ class TelemetryIngest(object):
         return grpc.experimental.stream_unary(
             request_iterator,
             target,
-            '/telemetry.TelemetryIngest/StreamPackets',
+            '/app.TelemetryIngest/StreamPackets',
             telemetry__pb2.Packet.SerializeToString,
             telemetry__pb2.Ack.FromString,
             options,

@@ -22,3 +22,18 @@ Key Features/Skills:
 覆盖 FastAPI + AsyncIO（Web 层）
 覆盖 gRPC + Protobuf + 并发流处理（数据入口）
 自带 Pytest / Go test、CI、Docker、云部署脚本
+
+
+Project structure:
+
+RealTimeDataMonitorDemo/
+├── app/
+│   ├── main.py          # FastAPI Web服务
+│   ├── ingest.py        # gRPC数据接收服务
+│   ├── pipeline.py      # 数据处理管道
+│   └── telemetry_pb2*.py # 生成的gRPC代码
+├── proto/
+│   └── telemetry.proto  # 数据协议定义
+├── tests/               # 测试文件
+├── send_once.py         # 测试数据发送器
+└── docker-compose.yml   # 容器化部署

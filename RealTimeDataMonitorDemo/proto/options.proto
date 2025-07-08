@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package google.protobuf;
+
+import "google/protobuf/descriptor.proto";
+
+// 自定义的python_package选项
+extend google.protobuf.FileOptions {
+  string python_package = 50001;
+} 
