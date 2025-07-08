@@ -1,39 +1,63 @@
+# RealTimeDataMonitorDemo — 实时遥测数据监控示例 (gRPC + FastAPI + Redis + Docker Compose)
 
-Scenario: Suppose you want to collect raw data packets from IoT devices or network probes, extract key indicators in real time through concurrent pipelines, and finally expose them to the front-end or other back-end systems for query through HTTP/JSON.
+## 1. 场景与目标
+面向物联网/网络探针等高频数据源，**实时** 收集原始数据包 → 解析与计数 → HTTP/JSON 暴露指标。
 
-Cover FastAPI + AsyncIO (Web layer)
+* 单机即可体验完整链路；改用 Kubernetes 亦易扩展。
+* 代码穿插大量中文注释，适合作为"学习大厂后端架构"示例。 
 
-Cover gRPC + Protobuf + concurrent stream processing (data entry)
+## 2. 总体架构
+```
+┌──────────────┐      gRPC Stream        ┌──────────────┐   Redis PING/HGETALL  ┌──────────────┐
+│  send_once   │  ───────────────────►  │  ingest.py   │ ───────────────────► │   Redis  🐳  │
+└──────────────┘                        │  (gRPC)      │                      └──────────────┘
+                                        │              │◄────────────────────
+┌──────────────┐     HTTP /metrics       │              │   asyncio Queue
+│  前端 / curl  │  ◄─────────────────── │  main.py     │◄────────────────────
+└──────────────┘                        │  (FastAPI)   │   pipeline.aggregator
+                                        └──────────────┘
+```
+* **gRPC** `TelemetryIngest.StreamPackets` 流式接收 `Packet`。
+* **asyncio.Queue** 解耦接收与处理，内存计数同步写入 **Redis** 哈希 `device_metrics`。
+* **FastAPI** `/metrics` 端点实时读取 Redis 并返回 JSON。
+* 所有组件以 **docker-compose** 一键编排：`redis` 与 `realtime-demo` 两服务。
 
-Comes with Pytest / Go test, CI, Docker, cloud deployment scripts
+## 3. 技术要点
+| 领域 | 选型 | 亮点 |
+|------|------|------|
+| 传输协议 | gRPC + Protobuf | 双向流、跨语言、低开销 |
+| Web API | FastAPI + Uvicorn | 原生 `async`，自动 Swagger 文档 |
+| 状态同步 | Redis 哈希 | `HINCRBY` O(1) 计数；容器注入 `REDIS_HOST` 实现 12-Factor 配置 |
+| 并发模型 | Python `asyncio` | 单线程并发 >1e4 QPS；队列限流防 OOM |
+| 部署 | Docker Compose | 一条命令完成构建/启动；支持 Docker Desktop |
 
-Scenario: 
-    Suppose you want to collect raw data packets from IoT devices or network probes, extract key indicators in real time through concurrent pipelines, and finally expose them to the front-end or other back-end systems for query through HTTP/JSON.
+## 4. 实现难点 & 解决思路
+1. **模块导入冲突**  
+   ‑ gRPC 生成文件默认 `import telemetry_pb2`。在包内使用需改为 `from . import telemetry_pb2`，构建阶段用 `sed` 自动替换。
 
-Key Features/Skills:
-    - Cover FastAPI + AsyncIO (Web layer)
-    - Cover gRPC + Protobuf + concurrent stream processing (data entry)
-    - Comes with Pytest / Go test, CI, Docker, cloud deployment scripts
+2. **Redis 连接 in-container 与 localhost 差异**  
+   ‑ 通过 `os.getenv('REDIS_HOST', 'localhost')` 读取并在 compose 中注入 `REDIS_HOST=redis`，即本地与容器环境均可跑。
 
+3. **容器冷启动顺序**  
+   ‑ `depends_on:` 确保 Redis 先起；`ingest.py` 内部连接失败也会重试（可扩展）。
 
-场景：
-    假设你要收集来自 IoT 设备或网络探针的原始数据包，经过并发管道实时提取关键指标，最后通过 HTTP/JSON 暴露给前端或别的后端系统查询。
+4. **高并发内存压力**  
+   ‑ `asyncio.Queue(maxsize=10_000)` + 客户端背压；生产环境可换 Kafka / Redis Stream。
 
-覆盖 FastAPI + AsyncIO（Web 层）
-覆盖 gRPC + Protobuf + 并发流处理（数据入口）
-自带 Pytest / Go test、CI、Docker、云部署脚本
-
-
-Project structure:
-
+## 5. 目录结构 (关键文件)
+```
 RealTimeDataMonitorDemo/
-├── app/
-│   ├── main.py          # FastAPI Web服务
-│   ├── ingest.py        # gRPC数据接收服务
-│   ├── pipeline.py      # 数据处理管道
-│   └── telemetry_pb2*.py # 生成的gRPC代码
-├── proto/
-│   └── telemetry.proto  # 数据协议定义
-├── tests/               # 测试文件
-├── send_once.py         # 测试数据发送器
-└── docker-compose.yml   # 容器化部署
+├─ app/
+│  ├─ ingest.py           # gRPC 服务
+│  ├─ main.py             # FastAPI 服务
+│  ├─ pipeline.py         # 队列 & 聚合
+│  └─ telemetry_pb2*.py   # gRPC 生成代码（自动）
+├─ proto/telemetry.proto  # Protobuf 定义
+├─ send_once.py           # 随机数据包生成器
+├─ docker-compose.yml     # redis + demo 一键编排
+├─ Dockerfile             # 多阶段构建
+├─ 运行指南.md            # CLI & Docker 使用文档
+└─ 代码详细注释与学习指导.md # 深度注释
+```
+
+> 欢迎 Star/Fork，或将其扩展为 Kafka、Prometheus、Grafana 监控等更大规模的生产级架构。
