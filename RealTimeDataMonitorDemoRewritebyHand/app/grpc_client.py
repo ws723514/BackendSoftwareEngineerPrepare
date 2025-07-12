@@ -56,6 +56,13 @@ class TelemetryClient:
             filter = filter
         )
     
+    # 客户端流
+    # 客户端发送请求订阅，然后服务器发送流式响应
+    def SubscribeTelemetry(self, filter: str):
+        request = telemetry_pb2.TelemetryServiceSubscribeTelemetryRequest(  # type: ignore[attr-defined]
+            fileter = "type=SYSTEM"
+            response_
+    
 if __name__ == "__main__":
     # 原始代码 - 注释原因：protobuf类型使用错误，TelemetryType不存在，应该是DataType；content应该是Any类型
     # with grpc.insecure_channel("localhost:50051") as channel:

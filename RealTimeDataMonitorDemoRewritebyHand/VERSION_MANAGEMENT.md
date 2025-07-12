@@ -2,51 +2,59 @@
 
 ## 版本命名规范
 
-采用语义化版本控制 (Semantic Versioning): `MAJOR.MINOR.PATCH`
+⚠️ **重要说明**: 由于本项目位于 `BackendSoftwareEngineerPrepare` 主仓库中，为避免版本标签冲突，我们采用**项目前缀**策略。
 
+采用语义化版本控制 (Semantic Versioning): `grpc-MAJOR.MINOR.PATCH`
+
+- **前缀**: `grpc-` (标识这是gRPC项目的版本)
 - **MAJOR**: 主要功能阶段 (1-5，对应学习计划的5个阶段)
 - **MINOR**: 功能增加 (向后兼容的新功能)
 - **PATCH**: 问题修复 (向后兼容的bug修复)
 
+### 版本标签示例
+- `grpc-v1.0.0` - gRPC项目第1个主版本
+- `grpc-v1.1.0` - 添加流式推送功能
+- `grpc-v2.0.0` - 集成Redis功能
+
 ## 版本规划
 
-### v1.x.x - 基础功能实现（单进程+内存数据源）
-- **v1.0.0** ✅ 当前版本 - gRPC基础通讯 (SendTelemetry + GetTelemetry)
-- **v1.1.0** 🔄 计划中 - 添加 SubscribeTelemetry (服务器流式推送)
-- **v1.2.0** 🔄 计划中 - 添加 StreamTelemetry (双向流)
-- **v1.3.0** 🔄 计划中 - 完善测试和文档
+### grpc-v1.x.x - 基础功能实现（单进程+内存数据源）
+- **grpc-v1.0.0** ✅ 当前版本 - gRPC基础通讯 (SendTelemetry + GetTelemetry)
+- **grpc-v1.1.0** 🔄 计划中 - 添加 SubscribeTelemetry (服务器流式推送)
+- **grpc-v1.2.0** 🔄 计划中 - 添加 StreamTelemetry (双向流)
+- **grpc-v1.3.0** 🔄 计划中 - 完善测试和文档
 
-### v2.x.x - 引入Redis（支持多进程/多服务/持久化）
-- **v2.0.0** 🔄 计划中 - 集成Redis基础功能
-- **v2.1.0** 🔄 计划中 - 多进程数据一致性测试
-- **v2.2.0** 🔄 计划中 - Redis性能优化
+### grpc-v2.x.x - 引入Redis（支持多进程/多服务/持久化）
+- **grpc-v2.0.0** 🔄 计划中 - 集成Redis基础功能
+- **grpc-v2.1.0** 🔄 计划中 - 多进程数据一致性测试
+- **grpc-v2.2.0** 🔄 计划中 - Redis性能优化
 
-### v3.x.x - 容器化与Docker Compose
-- **v3.0.0** 🔄 计划中 - Dockerfile和基础容器化
-- **v3.1.0** 🔄 计划中 - Docker Compose多服务编排
-- **v3.2.0** 🔄 计划中 - 容器网络和环境变量优化
+### grpc-v3.x.x - 容器化与Docker Compose
+- **grpc-v3.0.0** 🔄 计划中 - Dockerfile和基础容器化
+- **grpc-v3.1.0** 🔄 计划中 - Docker Compose多服务编排
+- **grpc-v3.2.0** 🔄 计划中 - 容器网络和环境变量优化
 
-### v4.x.x - 多进程/多服务/分布式部署
-- **v4.0.0** 🔄 计划中 - 多进程服务支持
-- **v4.1.0** 🔄 计划中 - 分布式部署和负载均衡
-- **v4.2.0** 🔄 计划中 - 服务发现和健康检查
+### grpc-v4.x.x - 多进程/多服务/分布式部署
+- **grpc-v4.0.0** 🔄 计划中 - 多进程服务支持
+- **grpc-v4.1.0** 🔄 计划中 - 分布式部署和负载均衡
+- **grpc-v4.2.0** 🔄 计划中 - 服务发现和健康检查
 
-### v5.x.x - 高阶工程实践
-- **v5.0.0** 🔄 计划中 - 认证鉴权系统
-- **v5.1.0** 🔄 计划中 - 监控告警 (Prometheus + Grafana)
-- **v5.2.0** 🔄 计划中 - CI/CD自动化
-- **v5.3.0** 🔄 计划中 - 云原生部署 (K8s)
+### grpc-v5.x.x - 高阶工程实践
+- **grpc-v5.0.0** 🔄 计划中 - 认证鉴权系统
+- **grpc-v5.1.0** 🔄 计划中 - 监控告警 (Prometheus + Grafana)
+- **grpc-v5.2.0** 🔄 计划中 - CI/CD自动化
+- **grpc-v5.3.0** 🔄 计划中 - 云原生部署 (K8s)
 
 ## 版本操作指南
 
-### 1. 标记当前版本为 v1.0.0
+### 1. 标记当前版本为 grpc-v1.0.0
 
 ```bash
 # 添加所有更改
 git add .
 
 # 提交当前状态
-git commit -m "feat: 完成gRPC基础通讯功能 - v1.0.0
+git commit -m "feat: 完成gRPC基础通讯功能 - grpc-v1.0.0
 
 - ✅ 实现SendTelemetry单向发送
 - ✅ 实现GetTelemetry单向查询  
@@ -55,8 +63,8 @@ git commit -m "feat: 完成gRPC基础通讯功能 - v1.0.0
 - ✅ 编写详细的学习文档和运行指南
 - ✅ 建立清晰的项目结构"
 
-# 创建版本标签
-git tag -a v1.0.0 -m "v1.0.0: gRPC基础通讯功能完成
+# 创建版本标签（使用grpc-前缀避免与主仓库冲突）
+git tag -a grpc-v1.0.0 -m "grpc-v1.0.0: gRPC基础通讯功能完成
 
 核心功能:
 - gRPC服务器和客户端通讯
@@ -69,8 +77,8 @@ git tag -a v1.0.0 -m "v1.0.0: gRPC基础通讯功能完成
 - Buf工具链"
 
 # 推送到远程仓库
-git push origin main
-git push origin v1.0.0
+git push origin CI_CD_supportVersion  # 当前分支
+git push origin grpc-v1.0.0
 ```
 
 ### 2. 创建新版本的工作流程
