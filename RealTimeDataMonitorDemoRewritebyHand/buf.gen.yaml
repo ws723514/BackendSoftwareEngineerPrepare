@@ -1,0 +1,8 @@
+version: v1
+plugins:
+  # 生成纯 Python protobuf 消息类
+  - plugin: buf.build/protocolbuffers/python
+    out: generated
+  # 生成 Python gRPC 服务存根
+  - plugin: buf.build/grpc/python
+    out: generated 

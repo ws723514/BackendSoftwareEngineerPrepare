@@ -1,0 +1,243 @@
+// Telemetry v1 协议
+// ------------------------------------------------------------
+// 简要说明：
+// 1) TelemetryV2 是核心业务消息，记录遥测内容，字段稳定。
+// 2) 每个 RPC 采用 XxxRequest / XxxResponse 包装 TelemetryV2，
+//    便于后续追加分页、trace_id 等字段，同时保持向后兼容。
+// 3) 学习 / Demo 阶段可直接把 TelemetryV2 当作 RPC 参数，
+//    生产环境推荐保持包装写法。
+// ------------------------------------------------------------
+
+syntax = "proto3";
+package telemetry.v1;   //前面是包名，后面加点 跟版本号 
+        //不同版本号之间需要独立安放在不同的文件夹中
+        //生成不同版本号的客户端和服务端代码
+
+import "google/protobuf/timestamp.proto"; // 时间戳类型，常用于记录事件发生的时间
+import "google/protobuf/any.proto"; // 任意类型，可存储任意消息类型的数据
+import "google/protobuf/struct.proto"; // 结构化数据类型，适合动态/嵌套结构
+import "google/protobuf/duration.proto"; // 持续时间类型，表示时间间隔
+import "google/protobuf/wrappers.proto"; // 基本类型的包装器，支持可空类型
+
+/*
+import "google/..." 与手动下载标准 proto 的区别
+1) 直接 import（推荐）
+    import "google/protobuf/descriptor.proto";
+    protoc 在编译时会自动把自己的 include 路径加入搜索列表。
+    这些标准文件伴随 protoc 安装，一般位于 /include/google/protobuf/*.proto。
+
+    优点：工程目录更干净，跟随 protoc 版本自动更新，避免冗余复制。
+    
+2) 把 google/.proto 复制到项目里
+    - 只有在极端情况下才需要：
+    你的 CI/CD 环境无法保证 protoc 安装；
+    想把依赖全部 vendoring 进仓库（离线环境）。
+
+    缺点：
+    容易忘记同步新版；
+    重复文件增大仓库体积。
+
+    结论
+    绝大多数场景直接写 import "google/protobuf/xxx.proto"; 即可，不用下载。
+    只要本机或 Docker 镜像里安装了 protoc，编译阶段一定能找到这些 Well-Known Types。
+*/
+
+/*
+    定义数据类型
+    
+*/
+enum DataType {
+    // 未指定类型（零值必须以 _UNSPECIFIED 结尾）
+    DATA_TYPE_UNSPECIFIED = 0;      // 命名规则： 
+    
+    // 系统数据
+    DATA_TYPE_SYSTEM = 1;
+
+    // 应用程序数据
+    DATA_TYPE_APPLICATION = 2;
+
+    // 网络数据
+    DATA_TYPE_NETWORK = 3;
+
+    // 安全数据
+    DATA_TYPE_SECURITY = 4;
+
+    // 用户行为数据
+    DATA_TYPE_USER_BEHAVIOR = 5;
+}
+
+enum TelemetryPriority {
+    TELEMETRY_PRIORITY_PRIORITY_UNSPECIFIED = 0;
+    TELEMETRY_PRIORITY_LOW    = 1;
+    TELEMETRY_PRIORITY_NORMAL = 2;
+    TELEMETRY_PRIORITY_HIGH   = 3;
+}
+
+message TelemetryV2 {
+    /* 遥测数据消息
+    1. id: 唯一标识符，字符串类型
+    */
+        // Telemetry data ID
+    string id = 1; // 字段编号为1，唯一标识该条遥测数据的ID
+        // 最后的 1 就是字段编号，表示这是该消息中的第1个字段。
+        // 每个字段都需要唯一的编号，不能重复。
+        // 编号用于序列化和反序列化时的高效映射，与顺序无关，
+        // 但不能重复。
+
+    // Telemetry data type
+    DataType type = 2; 
+
+    // Telemetry data content, can be any protobuf message
+    google.protobuf.Any content = 3;
+
+    // Timestamp of when the telemetry data was collected
+    google.protobuf.Timestamp timestamp = 4;
+
+    google.protobuf.Struct metadata = 5; // 结构化元数据，适合动态/嵌套结构
+
+    // Duration since the telemetry data was collected
+    google.protobuf.Duration duration = 6; // 持续时间，表示时间间隔
+
+    // Optional fields using wrappers for nullability 
+    google.protobuf.StringValue source = 7; // 可选字符串字段  
+
+}
+/*** 概念解释：
+    1. service TelemetryService - 服务容器
+    这是一个服务接口定义
+    类似于 Java 中的 interface 或 Python 中的抽象类
+    定义了这个服务提供哪些功能
+
+    2. rpc GetTelemetry - 远程函数
+    这是服务中的一个远程可调用函数
+    客户端可以通过网络调用这个函数
+    类似于普通的函数，但可以跨网络调用
+
+    3. 括号中的内容 - 数据类型（不是服务）
+    rpc GetTelemetry(TelemetryServiceGetTelemetryRequest) returns (TelemetryServiceGetTelemetryResponse);
+    //              ↑ 输入参数类型                              ↑ 返回值类型
+
+        类比理解：
+            普通 Python 函数：
+                def get_telemetry(request: GetTelemetryRequest) -> GetTelemetryResponse:
+                    # 函数实现
+                    return response
+            gRPC 远程函数：
+                rpc GetTelemetry(TelemetryServiceGetTelemetryRequest) returns (TelemetryServiceGetTelemetryResponse);
+
+    完整的关系图：
+        TelemetryService (服务)
+        ├── SendTelemetry() (远程函数1)
+        │   ├── 输入：TelemetryServiceSendTelemetryRequest (消息类型)
+        │   └── 输出：TelemetryServiceSendTelemetryResponse (消息类型)
+        │
+        ├── GetTelemetry() (远程函数2)
+        │   ├── 输入：TelemetryServiceGetTelemetryRequest (消息类型)
+        │   └── 输出：TelemetryServiceGetTelemetryResponse (消息类型)
+        │
+        └── StreamTelemetry() (远程函数3)
+            ├── 输入：stream TelemetryServiceStreamTelemetryRequest (流消息类型)
+            └── 输出：stream TelemetryServiceStreamTelemetryResponse (流消息类型)
+*/
+
+// *********************************************************************************//
+// gRPC 服务定义
+//  service … { rpc … } ── 声明“有什么远程函数”。
+//  这块必须写，否则 gRPC 不知道可调用哪些方法。
+service TelemetryService {
+    // 单向发送遥测数据
+    // 更改理由：使用服务前缀命名规范，符合 Buf lint 建议
+    rpc SendTelemetry(TelemetryServiceSendTelemetryRequest) returns (TelemetryServiceSendTelemetryResponse);
+    
+    // 获取遥测数据
+    // 更改理由：使用服务前缀命名规范，符合 Buf lint 建议
+    rpc GetTelemetry(TelemetryServiceGetTelemetryRequest) returns (TelemetryServiceGetTelemetryResponse);
+    
+    // 双向流：实时遥测数据传输
+    // 更改理由：使用服务前缀命名规范，符合 Buf lint 建议
+    rpc StreamTelemetry(stream TelemetryServiceStreamTelemetryRequest) returns (stream TelemetryServiceStreamTelemetryResponse);
+    
+    // 服务器流：订阅遥测数据
+    // 更改理由：使用服务前缀命名规范，符合 Buf lint 建议
+    rpc SubscribeTelemetry(TelemetryServiceSubscribeTelemetryRequest) returns (stream TelemetryServiceSubscribeTelemetryResponse);
+}
+// *********************************************************************************//
+
+
+
+
+// *********************************************************************************//
+// RPC 请求和响应消息类型
+// 这些是数据结构，不是函数！用于在客户端和服务器之间传输数据
+
+// 发送遥测数据的请求消息
+// 更改理由：遵循 Google protobuf 风格指南和 Buf lint 建议
+// 采用服务前缀命名避免跨服务的消息类型命名冲突
+// 原命名：message SendTelemetryRequestMessage
+message TelemetryServiceSendTelemetryRequest {
+    TelemetryV2 telemetry = 1; // 要发送的遥测数据
+
+    string client_id      = 2;   // 将来想加就直接追加
+    int32  priority       = 3;   // 再追加也行
+}
+
+// 发送遥测数据的响应消息
+// 更改理由：遵循 Google protobuf 风格指南和 Buf lint 建议
+// 采用服务前缀命名避免跨服务的消息类型命名冲突
+// 原命名：message SendTelemetryResponseMessage
+message TelemetryServiceSendTelemetryResponse {
+    bool success = 1;    // 是否成功发送（true=成功，false=失败）
+    string message = 2;  // 响应消息，如"发送成功"或错误信息
+}
+
+// 获取遥测数据的请求消息
+// 更改理由：遵循 Google protobuf 风格指南和 Buf lint 建议
+// 采用服务前缀命名避免跨服务的消息类型命名冲突
+// 原命名：message GetTelemetryRequestMessage
+message TelemetryServiceGetTelemetryRequest {
+    string id = 1; // 要获取的遥测数据的唯一标识符
+}
+
+// 获取遥测数据的响应消息
+// 更改理由：遵循 Google protobuf 风格指南和 Buf lint 建议
+// 采用服务前缀命名避免跨服务的消息类型命名冲突
+// 原命名：message GetTelemetryResponseMessage
+message TelemetryServiceGetTelemetryResponse {
+    TelemetryV2 telemetry = 1; // 返回的遥测数据（如果找到的话）
+}
+
+// 流式传输遥测数据的请求消息
+// 更改理由：遵循 Google protobuf 风格指南和 Buf lint 建议
+// 采用服务前缀命名避免跨服务的消息类型命名冲突
+// 原命名：message StreamTelemetryRequestMessage
+message TelemetryServiceStreamTelemetryRequest {
+    TelemetryV2 telemetry = 1; // 客户端发送给服务器的遥测数据
+}
+
+// 流式传输遥测数据的响应消息
+// 更改理由：遵循 Google protobuf 风格指南和 Buf lint 建议
+// 采用服务前缀命名避免跨服务的消息类型命名冲突
+// 原命名：message StreamTelemetryResponseMessage
+message TelemetryServiceStreamTelemetryResponse {
+    TelemetryV2 telemetry = 1; // 服务器发送给客户端的遥测数据
+    bool found = 2;     // found or not
+    optional string err_msg =3;
+
+}
+
+// 订阅遥测数据的请求消息
+// 更改理由：遵循 Google protobuf 风格指南和 Buf lint 建议
+// 采用服务前缀命名避免跨服务的消息类型命名冲突
+// 原命名：message SubscribeTelemetryRequestMessage
+message TelemetryServiceSubscribeTelemetryRequest {
+    string filter = 1; // 订阅过滤条件，如"type=SYSTEM"或"source=sensor1"
+}
+
+// 订阅遥测数据的响应消息（服务器会持续发送这种消息）
+// 更改理由：遵循 Google protobuf 风格指南和 Buf lint 建议
+// 采用服务前缀命名避免跨服务的消息类型命名冲突
+// 原命名：message SubscribeTelemetryResponseMessage
+message TelemetryServiceSubscribeTelemetryResponse {
+    TelemetryV2 telemetry = 1; // 服务器推送的遥测数据
+}
+// *********************************************************************************//
