@@ -48,7 +48,7 @@ async def serve() -> None:
     # 注册服务实现类到服务器
     # 学习点：add_TelemetryIngestServicer_to_server是gRPC的注册方法。
     # 注册服务实现类到服务器
-    telemetry_pb2_grpc.add_TelemetryIngestServicer_to_server(TelemetryServicer(), s) 
+    telemetry_pb2_grpc.add_TelemetryIngestServicer_to_server(TelemetryServicer(), s)
     
     s.add_insecure_port("[::]:50051")  # 监听所有网卡的50051端口
 
