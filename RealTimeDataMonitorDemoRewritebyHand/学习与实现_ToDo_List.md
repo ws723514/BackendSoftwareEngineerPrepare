@@ -3,9 +3,9 @@
 [√] 用 Python 列表实现内存数据源
 [√] 实现 SendTelemetry（单向发送）
 [√] 实现 GetTelemetry（单向查询）
-[ ] 实现 SubscribeTelemetry（服务器流式推送）
-[ ] 实现 StreamTelemetry（双向流，选做）
-[ ] 编写简单客户端进行功能测试
+[√] 实现 SubscribeTelemetry（服务器流式推送）
+[√] 实现 StreamTelemetry（双向流，选做）
+[√] 编写简单客户端进行功能测试
 [ ] 总结：内存数据源的局限性（单进程/单机/数据易丢失）
 > 工程升级点：实际生产环境需要多进程/多服务/持久化，内存方案仅适合本地测试和原型。
 2. 引入 Redis（支持多进程/多服务/持久化）

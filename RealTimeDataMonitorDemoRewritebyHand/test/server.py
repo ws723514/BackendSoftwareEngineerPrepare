@@ -30,12 +30,12 @@ def serve() -> None:
         TelemetryServiceServicer(), server
     )
 
-    # 3) 绑定端口（IPv6 + IPv4 通用写法）
-    server.add_insecure_port("[::]:50051")
+    # 3) 绑定端口（使用localhost避免网络配置问题）
+    server.add_insecure_port("localhost:50051")
 
     # 4) 启动并阻塞等待
     server.start()
-    print("[gRPC] Server started on 0.0.0.0:50051 (insecure)")
+    print("[gRPC] Server started on localhost:50051 (insecure)")
     server.wait_for_termination()
 
 if __name__ == "__main__":

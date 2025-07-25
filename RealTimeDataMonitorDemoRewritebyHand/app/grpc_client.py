@@ -52,16 +52,96 @@ class TelemetryClient:
         return receive_response
     
     def StreamTelemetry(self, filter: str):
-        request = telemetry_pb2.TelemetryServiceStreamTelemetryRequest(  # type: ignore[attr-defined]
-            filter = filter
-        )
+        """双向流遥测数据传输（正确实现）"""
+        import time
+        from google.protobuf import any_pb2, wrappers_pb2
+        
+        def create_test_telemetry(telemetry_id: str):
+            """创建测试用的遥测数据"""
+            content_any = any_pb2.Any()
+            content_string = wrappers_pb2.StringValue(value=f"双向流测试数据-{telemetry_id}")
+            content_any.Pack(content_string)
+            
+            return telemetry_pb2.TelemetryV2(  # type: ignore[attr-defined]
+                id=telemetry_id,
+                type=telemetry_pb2.DataType.DATA_TYPE_SYSTEM,  # type: ignore[attr-defined]
+                content=content_any
+            )
+        
+        def request_generator():
+            """请求生成器：持续产生请求对象（修复：不在生成器里调用RPC）"""
+            print("🚀 开始生成请求流...")
+            
+            for i in range(3):  # 发送3个请求
+                telemetry_data = create_test_telemetry(f"stream_{i+1}")
+                
+                # 修复：只创建请求对象，不调用RPC方法
+                request = telemetry_pb2.TelemetryServiceStreamTelemetryRequest(  # type: ignore[attr-defined]
+                    telemetry=telemetry_data
+                )
+                
+                print(f"📤 生成请求 {i+1}: {telemetry_data.id}")
+                yield request  # 修复：yield请求对象，不是RPC调用结果
+                
+                time.sleep(0.5)  # 间隔0.5秒
+            
+            print("📤 请求流生成完毕")
+        
+        print(f"🌊 启动双向流通信...")
+        
+        try:
+            # 修复：在外面调用RPC，传入请求生成器
+            response_stream = self.stub.StreamTelemetry(request_generator())
+            
+            print("📥 开始接收响应流...")
+            response_count = 0
+            
+            # 修复：去掉while True无限循环，直接处理响应流
+            for response in response_stream:
+                response_count += 1
+                # 修复：直接print，不要yield print()
+                print(f"📥 响应 {response_count}: ID={response.telemetry.id}, 找到={response.found}")
+                
+                if hasattr(response, 'err_msg') and response.err_msg:
+                    print(f"   ⚠️ 错误信息: {response.err_msg}")
+            
+            print(f"✅ 双向流完成，共收到 {response_count} 个响应")
+            
+        except grpc.RpcError as e:
+            print(f"❌ gRPC错误: {e}")
+        except Exception as e:
+            print(f"❌ 未知错误: {e}")
+            import traceback
+            traceback.print_exc()
+
+        
     
-    # 客户端流
-    # 客户端发送请求订阅，然后服务器发送流式响应
+    # 服务器流：客户端发送订阅请求，服务器持续推送数据
     def SubscribeTelemetry(self, filter: str):
+        """订阅遥测数据 - 服务器流式推送（基础版本）"""
+        print(f"📡 开始订阅遥测数据，过滤条件: {filter}")
+        
+        # 创建订阅请求 - 修复语法错误：添加缺失的右括号
         request = telemetry_pb2.TelemetryServiceSubscribeTelemetryRequest(  # type: ignore[attr-defined]
-            fileter = "type=SYSTEM"
-            response_
+            filter=filter
+        )
+        
+        try:
+            # 调用服务器流方法，返回一个响应流迭代器
+            response_stream = self.stub.SubscribeTelemetry(request)
+            
+            print("✅ 订阅成功，等待服务器推送数据...")
+            
+            # 遍历服务器推送的数据流
+            for response in response_stream:
+                print(f"🔄 收到遥测数据: ID={response.telemetry.id}, 类型={response.telemetry.type}")
+                # 这里可以添加数据处理逻辑
+                
+        except grpc.RpcError as e:
+            print(f"❌ 订阅请求失败: {e}")
+        except Exception as e:
+            print(f"❌ 订阅过程中发生错误: {e}")
+            
     
 if __name__ == "__main__":
     # 原始代码 - 注释原因：protobuf类型使用错误，TelemetryType不存在，应该是DataType；content应该是Any类型
